@@ -42,4 +42,26 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function mutations() {
+        return $this->hasMany(Transaction::class);
+    }
+
+    function createTransaction($transType = "IN", $amount) {
+        $createTransaction = new Transaction();
+        $createTransaction->user_id = $this->id;
+        $createTransaction->amount = $amount;
+        $createTransaction->transaction_type = $transType;
+        $createTransaction->save();
+
+        if($transType == "IN") {
+            $this->balance += $amount;
+        } else {
+            $this->balance -= $amount;
+        }
+
+        $this->save();
+
+        return $this;
+    }
 }

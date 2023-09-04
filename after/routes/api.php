@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\APIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::controller(APIController::class)->group(function() {
+    Route::prefix("v1")->group(function() {
+        Route::prefix("user")->group(function() {
+            Route::post("/","createUser");
+            Route::put("/","updateUser");
+        });
+        Route::prefix("bank-account")->group(function() {
+            Route::get("{norek}", "getDataBank");
+            Route::post("/", "topUpSaldo");
+            Route::post("/transfer", "transferAmount");
+            Route::get("/{norek}/mutations", "getMutation");
+        });
+    });
 });
